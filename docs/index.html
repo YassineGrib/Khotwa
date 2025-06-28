@@ -341,35 +341,28 @@
     <!-- Download Section -->
     <section id="download" class="download-section redesigned-download-section">
         <div class="container">
-            <div class="row align-items-center justify-content-center flex-lg-row-reverse">
-                <!-- App Mockup Image -->
-                <div class="col-lg-6 text-center mb-4 mb-lg-0 scroll-animate-right">
-                    <div class="download-mockup-wrapper position-relative d-inline-block">
-                        <img src="images/app-mockup.png" alt="Khotwa App Mockup" class="img-fluid shadow-lg rounded-4 download-mockup-img" style="max-width: 340px;">
-                        <div class="mockup-bg-shape position-absolute top-50 start-50 translate-middle"></div>
-                    </div>
-                </div>
+            <div class="row align-items-center justify-content-center">
                 <!-- Download Info -->
-                <div class="col-lg-6 scroll-animate-left">
-                    <div class="download-info-card p-4 p-lg-5 rounded-4 shadow-lg bg-blur">
+                <div class="col-lg-8 mx-auto scroll-animate-left">
+                    <div class="download-info-card p-4 p-lg-5 rounded-4 shadow-lg bg-blur text-center">
                         <h2 class="download-title mb-3">حمل التطبيق الذكي الآن</h2>
                         <p class="download-desc mb-4">
                             انضم إلى منصة خُطوة الذكية واحصل على رعاية صحية متطورة ومتخصصة. التطبيق متاح الآن على أجهزة الأندرويد مع مميزات ذكية متقدمة.
                         </p>
-                        <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                            <button class="btn btn-warning btn-lg download-btn pulse" onclick="downloadApp('Android')">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center gap-3 mb-4">
+                            <a href="flutter-apk/Khatwa-release.apk" class="btn btn-warning btn-lg download-btn pulse" target="_blank">
                                 <i class="fab fa-google-play me-2"></i>
                                 تحميل للأندرويد
-                            </button>
+                            </a>
                             <div class="qr-box d-flex flex-column align-items-center ms-3">
                                 <div class="qr-label mb-1">أو امسح الكود</div>
                                 <div class="qr-img bg-white rounded-3 p-2 shadow-sm">
                                     <!-- Replace with real QR code image if available -->
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://play.google.com/store/apps/details?id=com.khotwa.app" alt="QR Code" width="80" height="80">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=flutter-apk/Khatwa-release.apk" alt="QR Code" width="80" height="80">
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap gap-3">
+                        <div class="d-flex flex-wrap gap-3 justify-content-center">
                             <div class="stat-box d-flex align-items-center gap-2">
                                 <i class="fas fa-star text-warning"></i>
                                 <span class="stat-label">4.8/5 تقييم</span>
