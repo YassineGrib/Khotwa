@@ -1,0 +1,24 @@
+# ملفات الخطوط المطلوبة
+
+هذا المجلد يحتوي على الخطوط العربية المطلوبة للتطبيق.
+
+## الملفات المطلوبة:
+
+### خط Cairo:
+- Cairo-Light.ttf
+- Cairo-Regular.ttf
+- Cairo-Medium.ttf
+- Cairo-SemiBold.ttf
+- Cairo-Bold.ttf
+
+### خط Tajawal:
+- Tajawal-Light.ttf
+- Tajawal-Regular.ttf
+- Tajawal-Medium.ttf
+- Tajawal-Bold.ttf
+
+### خط Amiri:
+- Amiri-Regular.ttf
+- Amiri-Bold.ttf
+
+يرجى تحميل هذه الخطوط من Google Fonts ووضعها في هذا المجلد.
