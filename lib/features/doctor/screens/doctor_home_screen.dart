@@ -57,6 +57,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               child: Column(
                 children: [
                   _buildHeader(context),
+                  _buildDoctorEarningsCard(),
                   Expanded(child: _buildContent(context)),
                 ],
               ),
@@ -132,21 +133,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                 ),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.medical_services,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                    IconButton(
+                      icon: const Icon(Icons.notifications, color: Colors.white, size: 26),
+                      onPressed: () => _showNotificationsDialog(),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.star, color: Colors.amber, size: 26),
+                      onPressed: () => _showRatingDialog(),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -195,6 +188,82 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDoctorEarningsCard() {
+    final int _monthlyConsultations = 8; // محاكاة
+    final int _consultationPrice = 1500;
+    final double _commission = 0.20; // 20% عمولة المنصة
+
+    int yearlyConsultations = _monthlyConsultations * 12;
+    double monthlyEarnings = _monthlyConsultations * _consultationPrice * (1 - _commission);
+    double yearlyEarnings = yearlyConsultations * _consultationPrice * (1 - _commission);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.monetization_on, color: Colors.green, size: 28),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text('أرباحك هذا الشهر', style: AppTheme.titleLarge.copyWith(fontWeight: FontWeight.bold))),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('أرباح الاستشارات (شهرياً):', style: AppTheme.bodyMedium),
+                        const SizedBox(height: 4),
+                        Text('${monthlyEarnings.toStringAsFixed(0)} دج', style: AppTheme.headlineSmall.copyWith(color: Colors.green, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('أرباح الاستشارات (سنوياً):', style: AppTheme.bodyMedium),
+                        const SizedBox(height: 4),
+                        Text('${yearlyEarnings.toStringAsFixed(0)} دج', style: AppTheme.bodySmall.copyWith(color: Colors.green)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(child: Text('عدد الاستشارات الشهرية: $_monthlyConsultations', style: AppTheme.bodySmall)),
+                  Expanded(child: Text('سعر الاستشارة: $_consultationPrice دج', style: AppTheme.bodySmall)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.percent, size: 16, color: Colors.orange),
+                  const SizedBox(width: 4),
+                  Text('نسبة عمولة المنصة: ${(100 * _commission).toInt()}%', style: AppTheme.bodySmall.copyWith(color: Colors.orange)),
+                  const SizedBox(width: 12),
+                  Icon(Icons.percent, size: 16, color: Colors.green),
+                  const SizedBox(width: 4),
+                  Text('نسبة أرباحك: ${(100 * (1 - _commission)).toInt()}%', style: AppTheme.bodySmall.copyWith(color: Colors.green)),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -414,6 +483,38 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
       context,
       AppRouter.welcome,
       (route) => false,
+    );
+  }
+
+  void _showNotificationsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('الإشعارات'),
+        content: const Text('لا توجد إشعارات حالياً.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRatingDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تقييم التطبيق'),
+        content: const Text('يرجى تقييم تجربتك مع التطبيق.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
     );
   }
 }

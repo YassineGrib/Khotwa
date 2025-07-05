@@ -33,6 +33,15 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool _obscureConfirmPassword = true;
   String _selectedRole = AppConstants.rolePatient;
 
+  // Add this field and dropdown widget
+  String _selectedSpecialistType = 'أطباء العظام';
+  final List<String> _specialistTypes = [
+    'أطباء العظام',
+    'فنيون تصنيع الأعضاء',
+    'أخصائي التأهيل الحركي',
+    'مرشدين اجتماعيين ونفسانيين',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -419,12 +428,16 @@ class _RegisterScreenState extends State<RegisterScreen>
             const SizedBox(width: 8),
             _buildRoleOption(
               AppConstants.roleDoctor,
-              'طبيب',
+              'مختص',
               Icons.medical_services,
               AppTheme.doctorColor,
             ),
           ],
         ),
+        if (_selectedRole == AppConstants.roleDoctor) ...[
+          const SizedBox(height: 16),
+          _buildSpecialistTypeDropdown(),
+        ],
       ],
     );
   }
@@ -469,6 +482,28 @@ class _RegisterScreenState extends State<RegisterScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSpecialistTypeDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedSpecialistType,
+      items: _specialistTypes
+          .map((type) => DropdownMenuItem(
+                value: type,
+                child: Text(type),
+              ))
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedSpecialistType = value!;
+        });
+      },
+      decoration: AppTheme.getInputDecoration(
+        labelText: 'تخصص المختص',
+        hintText: 'اختر نوع المختص',
+        prefixIcon: Icons.medical_services,
       ),
     );
   }

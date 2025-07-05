@@ -333,7 +333,7 @@ class _ChatScreenState extends State<ChatScreen>
       {
         'doctorId': '3',
         'doctorName': 'د. محمد السعيد',
-        'specialty': 'طب القلب',
+        'specialty': 'طب العظام',
         'lastMessage': 'تحتاج لإجراء فحص دوري كل 3 أشهر',
         'time': '3 أيام',
         'unreadCount': 1,

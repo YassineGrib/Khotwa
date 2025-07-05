@@ -399,7 +399,7 @@ class _TreatmentTrackingScreenState extends State<TreatmentTrackingScreen>
         onChanged: (value) {
           // TODO: Handle notification setting change
         },
-        activeColor: AppTheme.patientColor,
+        activeThumbColor: AppTheme.patientColor,
       ),
     );
   }
@@ -1261,7 +1261,7 @@ class _TreatmentTrackingScreenState extends State<TreatmentTrackingScreen>
     ];
     final progress = [20, 35, 50, 60, 70, 75];
 
-    return Container(
+    return SizedBox(
       height: 200,
       child: Column(
         children: [

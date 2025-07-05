@@ -17,7 +17,7 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
   late Animation<Offset> _slideAnimation;
 
   final List<Map<String, dynamic>> _cartItems = [];
-  int _selectedCategoryIndex = 0;
+  final int _selectedCategoryIndex = 0;
 
   @override
   void initState() {
@@ -104,8 +104,8 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: const [
-            Tab(icon: Icon(Icons.medication), text: 'الأدوية'),
-            Tab(icon: Icon(Icons.medical_services), text: 'الأجهزة الطبية'),
+            Tab(icon: Icon(Icons.store), text: 'محلات المستلزمات الطبية'),
+            Tab(icon: Icon(Icons.extension), text: 'طلبات الأعضاء واللواحق'),
             Tab(icon: Icon(Icons.health_and_safety), text: 'مستلزمات العناية'),
           ],
         ),
@@ -117,8 +117,8 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _buildMedicinesTab(),
-              _buildMedicalDevicesTab(),
+              _buildShopsTab(),
+              _buildRequestsTab(),
               _buildCareSuppliesTab(),
             ],
           ),
@@ -127,33 +127,82 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
     );
   }
 
-  Widget _buildMedicinesTab() {
-    return SingleChildScrollView(
+  Widget _buildShopsTab() {
+    final shops = [
+      {
+        'name': 'محل الحياة للمستلزمات الطبية',
+        'address': 'سطيف - شارع الاستقلال',
+        'services': ['بيع كراسي متحركة', 'أجهزة تعويضية', 'لواحق صناعية'],
+        'products': ['كرسي متحرك كهربائي', 'طرف صناعي سفلي', 'عكاز طبي'],
+        'phone': '+213 36 12 34 56',
+      },
+      {
+        'name': 'مؤسسة الأمل للأجهزة الطبية',
+        'address': 'سطيف - حي الهضاب',
+        'services': ['تصنيع أطراف صناعية', 'صيانة أجهزة طبية'],
+        'products': ['طرف علوي صناعي', 'جبيرة يد', 'دعامة ظهر'],
+        'phone': '+213 36 23 45 67',
+      },
+    ];
+    return ListView.builder(
       padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildFeaturedMedicine(),
-          const SizedBox(height: 24),
-          _buildMedicineCategories(),
-          const SizedBox(height: 24),
-          _buildPopularMedicines(),
-        ],
-      ),
+      itemCount: shops.length,
+      itemBuilder: (context, index) {
+        final shop = shops[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(shop['name'] as String, style: AppTheme.titleLarge.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
+                Text(shop['address'] as String, style: AppTheme.bodyMedium),
+                const SizedBox(height: 8),
+                Text('الخدمات:', style: AppTheme.bodySmall.copyWith(fontWeight: FontWeight.bold)),
+                ...List.generate((shop['services'] as List).length, (i) => Text('- ${(shop['services'] as List)[i] as String}', style: AppTheme.bodySmall)),
+                const SizedBox(height: 8),
+                Text('المنتجات المتوفرة:', style: AppTheme.bodySmall.copyWith(fontWeight: FontWeight.bold)),
+                ...List.generate((shop['products'] as List).length, (i) => Text('- ${(shop['products'] as List)[i] as String}', style: AppTheme.bodySmall)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.phone, size: 16),
+                    const SizedBox(width: 4),
+                    Text(shop['phone'] as String, style: AppTheme.bodySmall),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildMedicalDevicesTab() {
-    return SingleChildScrollView(
+  Widget _buildRequestsTab() {
+    return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildFeaturedDevice(),
+          Text('طلب عضو أو لواحق صناعية', style: AppTheme.titleLarge.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          Text('يمكنك هنا تقديم طلب للحصول على طرف صناعي أو لواحق طبية خاصة بك، وسيتم التواصل معك من قبل المحلات المختصة.'),
           const SizedBox(height: 24),
-          _buildDeviceCategories(),
-          const SizedBox(height: 24),
-          _buildPopularDevices(),
+          ElevatedButton.icon(
+            onPressed: () {
+              // TODO: فتح نموذج الطلب
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('طلب جديد'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.patientColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          // يمكن إضافة قائمة الطلبات السابقة هنا لاحقاً
         ],
       ),
     );
@@ -170,759 +219,6 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
           _buildSupplyCategories(),
           const SizedBox(height: 24),
           _buildPopularSupplies(),
-        ],
-      ),
-    );
-  }
-
-  // Featured Medicine Widget
-  Widget _buildFeaturedMedicine() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.patientColor,
-            AppTheme.patientColor.withValues(alpha: 0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.patientColor.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.local_offer,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'عرض خاص',
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                    Text(
-                      'خصم 25% على مسكنات الألم',
-                      style: AppTheme.headlineSmall.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'مجموعة متنوعة من مسكنات الألم الآمنة والفعالة بأسعار مخفضة لفترة محدودة.',
-            style: AppTheme.bodyMedium.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Icon(
-                Icons.timer,
-                color: Colors.white.withValues(alpha: 0.8),
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'ينتهي خلال 3 أيام',
-                style: AppTheme.bodySmall.copyWith(
-                  color: Colors.white.withValues(alpha: 0.8),
-                ),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () => _viewOffer('pain-relief'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppTheme.patientColor,
-                ),
-                child: const Text('تسوق الآن'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Medicine Categories Widget
-  Widget _buildMedicineCategories() {
-    final categories = [
-      {'name': 'مسكنات الألم', 'icon': Icons.healing, 'count': 25},
-      {'name': 'مضادات الالتهاب', 'icon': Icons.medical_services, 'count': 18},
-      {'name': 'فيتامينات', 'icon': Icons.medication, 'count': 32},
-      {'name': 'مكملات غذائية', 'icon': Icons.health_and_safety, 'count': 15},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'تصنيفات الأدوية',
-          style: AppTheme.titleLarge.copyWith(
-            color: AppTheme.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        PerformanceUtils.buildOptimizedGridView(
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return _buildCategoryCard(category, AppTheme.patientColor);
-          },
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.8,
-          ),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCategoryCard(Map<String, dynamic> category, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(category['icon'], color: color, size: 28),
-          const SizedBox(height: 6),
-          Text(
-            category['name'],
-            style: AppTheme.bodyMedium.copyWith(
-              color: AppTheme.textPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '${category['count']} منتج',
-            style: AppTheme.bodySmall.copyWith(
-              color: AppTheme.textSecondary,
-              fontSize: 11,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSearchDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('البحث في المتجر'),
-        content: const TextField(
-          decoration: InputDecoration(
-            hintText: 'ابحث عن منتج...',
-            prefixIcon: Icon(Icons.search),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Implement search functionality
-            },
-            child: const Text('بحث'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showCart() {
-    // TODO: Show shopping cart
-  }
-
-  void _viewOffer(String offerId) {
-    // TODO: Navigate to offer details
-  }
-
-  // Popular Medicines Widget
-  Widget _buildPopularMedicines() {
-    final medicines = [
-      {
-        'name': 'باراسيتامول 500 مجم',
-        'description': 'مسكن للألم وخافض للحرارة',
-        'price': 15.50,
-        'originalPrice': 20.00,
-        'rating': 4.5,
-        'inStock': true,
-        'image': 'assets/images/medicine1.jpg',
-      },
-      {
-        'name': 'إيبوبروفين 400 مجم',
-        'description': 'مضاد للالتهاب ومسكن للألم',
-        'price': 25.00,
-        'originalPrice': null,
-        'rating': 4.3,
-        'inStock': true,
-        'image': 'assets/images/medicine2.jpg',
-      },
-      {
-        'name': 'فيتامين د 1000 وحدة',
-        'description': 'مكمل غذائي لتقوية العظام',
-        'price': 45.00,
-        'originalPrice': 55.00,
-        'rating': 4.7,
-        'inStock': false,
-        'image': 'assets/images/medicine3.jpg',
-      },
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'الأدوية الأكثر طلباً',
-          style: AppTheme.titleLarge.copyWith(
-            color: AppTheme.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ...medicines.map((medicine) => _buildProductCard(medicine)),
-      ],
-    );
-  }
-
-  Widget _buildProductCard(Map<String, dynamic> product) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.patientColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.medication,
-              color: AppTheme.patientColor,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product['name'],
-                  style: AppTheme.titleSmall.copyWith(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  product['description'],
-                  style: AppTheme.bodySmall.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _buildRating(product['rating']),
-                    const Spacer(),
-                    if (!product['inStock'])
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'غير متوفر',
-                          style: AppTheme.bodySmall.copyWith(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(
-                      '${product['price']} ر.س',
-                      style: AppTheme.titleMedium.copyWith(
-                        color: AppTheme.patientColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (product['originalPrice'] != null) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        '${product['originalPrice']} ر.س',
-                        style: AppTheme.bodySmall.copyWith(
-                          color: AppTheme.textSecondary,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              IconButton(
-                onPressed: product['inStock']
-                    ? () => _addToCart(product)
-                    : null,
-                icon: Icon(
-                  Icons.add_shopping_cart,
-                  color: product['inStock']
-                      ? AppTheme.patientColor
-                      : Colors.grey,
-                ),
-              ),
-              IconButton(
-                onPressed: () => _addToWishlist(product),
-                icon: Icon(
-                  Icons.favorite_border,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRating(double rating) {
-    return Row(
-      children: [
-        ...List.generate(5, (index) {
-          return Icon(
-            index < rating.floor()
-                ? Icons.star
-                : index < rating
-                ? Icons.star_half
-                : Icons.star_border,
-            color: Colors.amber,
-            size: 16,
-          );
-        }),
-        const SizedBox(width: 4),
-        Text(
-          rating.toString(),
-          style: AppTheme.bodySmall.copyWith(color: AppTheme.textSecondary),
-        ),
-      ],
-    );
-  }
-
-  // Featured Device Widget
-  Widget _buildFeaturedDevice() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green, Colors.green.withValues(alpha: 0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.green.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.medical_services,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'جهاز مميز',
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                    Text(
-                      'جهاز قياس الضغط الرقمي',
-                      style: AppTheme.headlineSmall.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'جهاز قياس ضغط الدم الرقمي عالي الدقة مع ذاكرة لحفظ القراءات السابقة.',
-            style: AppTheme.bodyMedium.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Icon(
-                Icons.verified,
-                color: Colors.white.withValues(alpha: 0.8),
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'معتمد طبياً',
-                style: AppTheme.bodySmall.copyWith(
-                  color: Colors.white.withValues(alpha: 0.8),
-                ),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () => _viewProduct('blood-pressure-monitor'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.green,
-                ),
-                child: const Text('عرض التفاصيل'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _addToCart(Map<String, dynamic> product) {
-    setState(() {
-      _cartItems.add(product);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('تم إضافة ${product['name']} إلى السلة'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
-  void _addToWishlist(Map<String, dynamic> product) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('تم إضافة ${product['name']} إلى المفضلة'),
-        backgroundColor: AppTheme.patientColor,
-      ),
-    );
-  }
-
-  void _viewProduct(String productId) {
-    // TODO: Navigate to product details
-  }
-
-  // Device Categories Widget
-  Widget _buildDeviceCategories() {
-    final categories = [
-      {'name': 'أجهزة قياس الضغط', 'icon': Icons.monitor_heart, 'count': 12},
-      {'name': 'أجهزة قياس السكر', 'icon': Icons.bloodtype, 'count': 8},
-      {'name': 'أجهزة التنفس', 'icon': Icons.air, 'count': 15},
-      {'name': 'أجهزة العلاج الطبيعي', 'icon': Icons.healing, 'count': 20},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'تصنيفات الأجهزة الطبية',
-          style: AppTheme.titleLarge.copyWith(
-            color: AppTheme.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.8,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return _buildCategoryCard(category, Colors.green);
-          },
-        ),
-      ],
-    );
-  }
-
-  // Popular Devices Widget
-  Widget _buildPopularDevices() {
-    final devices = [
-      {
-        'name': 'جهاز قياس ضغط الدم الرقمي',
-        'description': 'جهاز دقيق وسهل الاستخدام',
-        'price': 250.00,
-        'originalPrice': 300.00,
-        'rating': 4.8,
-        'inStock': true,
-        'image': 'assets/images/device1.jpg',
-      },
-      {
-        'name': 'جهاز قياس السكر',
-        'description': 'جهاز قياس سكر الدم مع شرائط',
-        'price': 180.00,
-        'originalPrice': null,
-        'rating': 4.6,
-        'inStock': true,
-        'image': 'assets/images/device2.jpg',
-      },
-      {
-        'name': 'جهاز البخار الطبي',
-        'description': 'جهاز استنشاق البخار للجهاز التنفسي',
-        'price': 120.00,
-        'originalPrice': 150.00,
-        'rating': 4.4,
-        'inStock': false,
-        'image': 'assets/images/device3.jpg',
-      },
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'الأجهزة الأكثر طلباً',
-          style: AppTheme.titleLarge.copyWith(
-            color: AppTheme.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ...devices.map((device) => _buildDeviceCard(device)),
-      ],
-    );
-  }
-
-  Widget _buildDeviceCard(Map<String, dynamic> device) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.medical_services,
-              color: Colors.green,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  device['name'],
-                  style: AppTheme.titleSmall.copyWith(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  device['description'],
-                  style: AppTheme.bodySmall.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _buildRating(device['rating']),
-                    const Spacer(),
-                    if (!device['inStock'])
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'غير متوفر',
-                          style: AppTheme.bodySmall.copyWith(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(
-                      '${device['price']} ر.س',
-                      style: AppTheme.titleMedium.copyWith(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (device['originalPrice'] != null) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        '${device['originalPrice']} ر.س',
-                        style: AppTheme.bodySmall.copyWith(
-                          color: AppTheme.textSecondary,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              IconButton(
-                onPressed: device['inStock'] ? () => _addToCart(device) : null,
-                icon: Icon(
-                  Icons.add_shopping_cart,
-                  color: device['inStock'] ? Colors.green : Colors.grey,
-                ),
-              ),
-              IconButton(
-                onPressed: () => _addToWishlist(device),
-                icon: Icon(
-                  Icons.favorite_border,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -1194,7 +490,7 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
                 Row(
                   children: [
                     Text(
-                      '${supply['price']} ر.س',
+                      '${supply['price']} دج',
                       style: AppTheme.titleMedium.copyWith(
                         color: Colors.purple,
                         fontWeight: FontWeight.bold,
@@ -1203,7 +499,7 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
                     if (supply['originalPrice'] != null) ...[
                       const SizedBox(width: 8),
                       Text(
-                        '${supply['originalPrice']} ر.س',
+                        '${supply['originalPrice']} دج',
                         style: AppTheme.bodySmall.copyWith(
                           color: AppTheme.textSecondary,
                           decoration: TextDecoration.lineThrough,
@@ -1232,6 +528,128 @@ class _MedicalStoreScreenState extends State<MedicalStoreScreen>
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSearchDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('البحث في المتجر'),
+        content: const TextField(
+          decoration: InputDecoration(
+            hintText: 'ابحث عن منتج...',
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // TODO: Implement search functionality
+            },
+            child: const Text('بحث'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCart() {
+    // TODO: Show shopping cart
+  }
+
+  void _viewProduct(String productId) {
+    // TODO: Navigate to product details
+  }
+
+  void _addToCart(Map<String, dynamic> product) {
+    setState(() {
+      _cartItems.add(product);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم إضافة ${product['name']} إلى السلة'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _addToWishlist(Map<String, dynamic> product) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم إضافة ${product['name']} إلى المفضلة'),
+        backgroundColor: AppTheme.patientColor,
+      ),
+    );
+  }
+
+  Widget _buildRating(double rating) {
+    return Row(
+      children: [
+        ...List.generate(5, (index) {
+          return Icon(
+            index < rating.floor()
+                ? Icons.star
+                : index < rating
+                ? Icons.star_half
+                : Icons.star_border,
+            color: Colors.amber,
+            size: 16,
+          );
+        }),
+        const SizedBox(width: 4),
+        Text(
+          rating.toString(),
+          style: AppTheme.bodySmall.copyWith(color: AppTheme.textSecondary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryCard(Map<String, dynamic> category, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(category['icon'] as IconData, color: color, size: 28),
+          const SizedBox(height: 6),
+          Text(
+            category['name'] as String,
+            style: AppTheme.bodyMedium.copyWith(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '${category['count']} منتج',
+            style: AppTheme.bodySmall.copyWith(
+              color: AppTheme.textSecondary,
+              fontSize: 11,
+            ),
           ),
         ],
       ),

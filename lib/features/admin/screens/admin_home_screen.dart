@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/routing/app_router.dart';
-import '../../../main.dart';
 import '../widgets/admin_app_bar.dart';
 
 class AdminHomeScreen extends StatefulWidget {
@@ -17,6 +15,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
+  // قسم الإحصائيات المالية والعمولات
+  double _subscriptionCommission = 0.15; // 15%
+  double _consultationCommission = 0.20; // 20%
+  int _monthlySubscriptions = 120; // عدد الاشتراكات الشهري (محاكاة)
+  int _monthlyConsultations = 80; // عدد الاستشارات الشهري (محاكاة)
+  final int _subscriptionPrice = 1000;
+  final int _consultationPrice = 1500;
 
   @override
   void initState() {
@@ -64,6 +70,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
                   _buildWelcomeCard(),
                   const SizedBox(height: 20),
                   _buildStatsCards(),
+                  const SizedBox(height: 20),
+                  _buildFinancialStatsCard(),
                   const SizedBox(height: 20),
                   _buildServicesGrid(),
                 ],
@@ -247,6 +255,113 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
               fontSize: 10,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFinancialStatsCard() {
+    int yearlySubscriptions = _monthlySubscriptions * 12;
+    int yearlyConsultations = _monthlyConsultations * 12;
+    double monthlySubProfit = _monthlySubscriptions * _subscriptionPrice.toDouble();
+    double yearlySubProfit = yearlySubscriptions * _subscriptionPrice.toDouble();
+    double monthlyConsProfit = _monthlyConsultations * _consultationPrice * _consultationCommission;
+    double yearlyConsProfit = yearlyConsultations * _consultationPrice * _consultationCommission;
+    double totalMonthly = monthlySubProfit + monthlyConsProfit;
+    double totalYearly = yearlySubProfit + yearlyConsProfit;
+    return StatefulBuilder(
+      builder: (context, setState) => Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.attach_money, color: AppTheme.successColor, size: 28),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text('الإحصائيات المالية والعمولات', style: AppTheme.titleLarge.copyWith(fontWeight: FontWeight.bold))),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('عمولة الاستشارات (%)', style: AppTheme.bodyMedium),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Slider(
+                                value: _consultationCommission,
+                                min: 0.05,
+                                max: 0.5,
+                                divisions: 9,
+                                label: '${(_consultationCommission * 100).toInt()}%',
+                                onChanged: (v) => setState(() => _consultationCommission = v),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text('${(_consultationCommission * 100).toInt()}%', style: TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildProfitTile('أرباح الاشتراكات', monthlySubProfit, yearlySubProfit, Colors.blue),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildProfitTile('أرباح الاستشارات (بعد العمولة)', monthlyConsProfit, yearlyConsProfit, Colors.orange),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildProfitTile('مجموع الأرباح', totalMonthly, totalYearly, Colors.green),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(child: Text('عدد الاشتراكات الشهرية: $_monthlySubscriptions', style: AppTheme.bodySmall)),
+                  Expanded(child: Text('عدد الاستشارات الشهرية: $_monthlyConsultations', style: AppTheme.bodySmall)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfitTile(String title, double monthly, double yearly, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 6),
+          Text('شهرياً: ${monthly.toStringAsFixed(0)} دج', style: AppTheme.bodyMedium),
+          Text('سنوياً: ${yearly.toStringAsFixed(0)} دج', style: AppTheme.bodySmall),
         ],
       ),
     );

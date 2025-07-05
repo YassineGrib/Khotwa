@@ -267,7 +267,7 @@ class _MedicalProfileScreenState extends State<MedicalProfileScreen>
                 _hasChronicDiseases = value;
               });
             },
-            activeColor: AppTheme.patientColor,
+            activeThumbColor: AppTheme.patientColor,
           ),
           if (_hasChronicDiseases) ...[
             const SizedBox(height: 16),
@@ -296,7 +296,7 @@ class _MedicalProfileScreenState extends State<MedicalProfileScreen>
                 _takingMedications = value;
               });
             },
-            activeColor: AppTheme.patientColor,
+            activeThumbColor: AppTheme.patientColor,
           ),
           if (_takingMedications) ...[
             const SizedBox(height: 16),
@@ -325,7 +325,7 @@ class _MedicalProfileScreenState extends State<MedicalProfileScreen>
                 _hasAllergies = value;
               });
             },
-            activeColor: AppTheme.patientColor,
+            activeThumbColor: AppTheme.patientColor,
           ),
           if (_hasAllergies) ...[
             const SizedBox(height: 16),

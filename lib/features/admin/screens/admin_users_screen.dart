@@ -627,9 +627,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
         'type': 'doctor',
         'status': 'pending',
         'registrationDate': '2024-01-15',
-        'specialization': 'طب الأطفال',
+        'specialization': 'طب العظام',
         'licenseNumber': 'DOC123456',
-        'phone': '+966501234567',
+        'phone': '+213551234567',
       },
       {
         'id': '2',
@@ -638,7 +638,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
         'type': 'patient',
         'status': 'pending',
         'registrationDate': '2024-01-16',
-        'phone': '+966507654321',
+        'phone': '+213507654321',
       },
     ];
   }
@@ -652,9 +652,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
         'type': 'doctor',
         'status': 'active',
         'registrationDate': '2024-01-10',
-        'specialization': 'طب النفس',
+        'specialization': 'مرشد نفسي',
         'licenseNumber': 'DOC789012',
-        'phone': '+966502345678',
+        'phone': '+213502345678',
       },
       {
         'id': '4',
@@ -663,7 +663,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
         'type': 'patient',
         'status': 'active',
         'registrationDate': '2024-01-12',
-        'phone': '+966508765432',
+        'phone': '+213508765432',
       },
     ];
   }
@@ -677,7 +677,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
         'type': 'patient',
         'status': 'blocked',
         'registrationDate': '2024-01-08',
-        'phone': '+966509876543',
+        'phone': '+213509876543',
       },
     ];
   }

@@ -133,21 +133,21 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                     );
                   },
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3),
-                      width: 1,
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.notifications, color: Colors.white, size: 26),
+                      onPressed: () => _showNotificationsDialog(),
                     ),
-                  ),
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                    IconButton(
+                      icon: const Icon(Icons.star, color: Colors.amber, size: 26),
+                      onPressed: () => _showRatingDialog(),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.white, size: 24),
+                      onPressed: () => _logout(context),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -259,6 +259,14 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
             'إعدادات الحساب',
             () => _showSettings(context),
             AppTheme.textSecondary,
+          ),
+          _buildServiceCard(
+            context,
+            'الاشتراك الشهري',
+            Icons.subscriptions,
+            'اشترك في خدمات التطبيق المميزة',
+            () => Navigator.pushNamed(context, '/subscription'),
+            AppTheme.warningColor,
           ),
         ],
       ),
@@ -459,6 +467,38 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
         backgroundColor: AppTheme.patientColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  void _showNotificationsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('الإشعارات'),
+        content: const Text('لا توجد إشعارات حالياً.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRatingDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تقييم التطبيق'),
+        content: const Text('يرجى تقييم تجربتك مع التطبيق.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
       ),
     );
   }

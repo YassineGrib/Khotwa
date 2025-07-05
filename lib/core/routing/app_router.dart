@@ -11,6 +11,7 @@ import '../../features/patient/screens/chat_screen.dart';
 import '../../features/patient/screens/treatment_tracking_screen.dart';
 import '../../features/patient/screens/educational_content_screen.dart';
 import '../../features/patient/screens/medical_store_screen.dart';
+import '../../features/patient/screens/subscription_screen.dart';
 import '../../features/doctor/screens/doctor_home_screen.dart';
 import '../../features/doctor/screens/professional_profile_screen.dart';
 import '../../features/doctor/screens/doctor_consultations_screen.dart';
@@ -114,6 +115,8 @@ class AppRouter {
         return _buildRoute(const AdminCentersScreen(), settings);
       case adminSettings:
         return _buildRoute(const AdminSettingsScreen(), settings);
+      case '/subscription':
+        return MaterialPageRoute(builder: (_) => const SubscriptionScreen());
       default:
         return _buildRoute(
           const Scaffold(body: Center(child: Text('الصفحة غير موجودة'))),

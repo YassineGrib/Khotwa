@@ -6,7 +6,7 @@ This folder contains images for the Khotwa website.
 
 1. **app-mockup.png** - Main app mockup/screenshot for the hero section
 2. **download-mockup.png** - App mockup for the download section
-3. **logo.png** - Khotwa app logo (optional)
+3. **logo.png** - Khotwa app logo (copied from assets/images/khotwa_logo.png)
 
 ## Image Specifications:
 

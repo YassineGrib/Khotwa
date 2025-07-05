@@ -1,14 +1,14 @@
-// App Constants for Khatwa Application
+// App Constants for Khotwa Application
 class AppConstants {
   // App Information
-  static const String appName = 'خطوة - Khatwa';
-  static const String appSlogan = 'خطوة نحو حياة أفضل ومستقبل أعظم';
+  static const String appName = 'خطوة - Khotwa';
+  static const String appSlogan = 'نحو حياة أفضل ومستقبل أعظم';
   static const String appVersion = '1.0.0';
   
   // User Roles
-  static const String rolePatient = 'patient';
-  static const String roleDoctor = 'doctor';
-  static const String roleAdmin = 'admin';
+  static const String rolePatient = 'المستخدم';
+  static const String roleDoctor = 'المختص';
+  static const String roleAdmin = 'المشرف';
   
   // Colors (Material Color Values)
   static const int patientColorValue = 0xFF2196F3; // Blue
@@ -16,7 +16,7 @@ class AppConstants {
   static const int adminColorValue = 0xFFF44336;   // Red
   
   // API Endpoints (for future backend integration)
-  static const String baseUrl = 'https://api.khatwa.com';
+  static const String baseUrl = 'https://api.khotwa.com';
   static const String authEndpoint = '/auth';
   static const String patientsEndpoint = '/patients';
   static const String doctorsEndpoint = '/doctors';
@@ -29,7 +29,7 @@ class AppConstants {
   static const String isFirstLaunchKey = 'is_first_launch';
   
   // Asset Paths
-  static const String logoPath = 'assets/images/logo.png';
+  static const String logoPath = 'assets/images/khotwa_logo.png';
   static const String welcomeVideoPath = 'assets/videos/welcome.mp4';
   static const String iconsPath = 'assets/icons/';
   static const String animationsPath = 'assets/animations/';

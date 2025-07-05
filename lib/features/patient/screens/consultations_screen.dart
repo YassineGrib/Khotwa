@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/performance_utils.dart';
 import '../../../core/services/auth_validation.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ConsultationsScreen extends StatefulWidget {
   const ConsultationsScreen({super.key});
@@ -107,24 +108,28 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
   final _descriptionController = TextEditingController();
   final _symptomsController = TextEditingController();
 
-  String _selectedSpecialty = 'طب عام';
+  String _selectedSpecialty = 'طبيب عظام';
   String _selectedUrgency = 'عادي';
   bool _isLoading = false;
+  bool _isPaymentDone = false;
 
   final List<String> _specialties = [
-    'طب عام',
-    'طب الأطفال',
-    'طب النساء والولادة',
-    'طب القلب',
-    'طب الأعصاب',
-    'طب العظام',
-    'طب الجلدية',
-    'طب العيون',
-    'طب الأنف والأذن والحنجرة',
-    'الطب النفسي',
+    'طبيب عظام',
+    'فني تصنيع الأطراف الاصطناعية',
+    'أخصائي التأهيل الحركي',
+    'مرشد اجتماعي',
+    'نفساني',
   ];
 
   final List<String> _urgencyLevels = ['عادي', 'مهم', 'عاجل', 'طارئ'];
+
+  final List<Map<String, dynamic>> _attachedFiles = [];
+  final List<String> _docTypes = [
+    'وصفة طبية',
+    'وثيقة طبية',
+    'وثيقة إدارية',
+    'أخرى',
+  ];
 
   @override
   void dispose() {
@@ -151,6 +156,8 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
             const SizedBox(height: 30),
             _buildSectionHeader('الأعراض والتفاصيل'),
             _buildSymptomsSection(),
+            const SizedBox(height: 40),
+            _buildAttachmentsSection(),
             const SizedBox(height: 40),
             _buildSubmitButton(),
             const SizedBox(height: 20),
@@ -194,7 +201,7 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
             decoration: AppTheme.getInputDecoration(
               labelText: 'عنوان الاستشارة',
               prefixIcon: Icons.title,
-              hintText: 'مثال: ألم في الصدر',
+              hintText: 'مثال: ألم في الركبة بعد سقوط في سطيف',
             ),
             validator: (value) =>
                 AuthValidation.validateRequired(value, 'عنوان الاستشارة'),
@@ -206,7 +213,7 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
             decoration: AppTheme.getInputDecoration(
               labelText: 'وصف المشكلة',
               prefixIcon: Icons.description,
-              hintText: 'اشرح المشكلة بالتفصيل...',
+              hintText: 'اشرح مشكلتك بالتفصيل، مثلاً: شعرت بألم حاد في الركبة بعد حادث في سطيف، مع صعوبة في الحركة...',
             ),
             validator: (value) =>
                 AuthValidation.validateRequired(value, 'وصف المشكلة'),
@@ -286,7 +293,22 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
       width: double.infinity,
       height: 55,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _submitConsultation,
+        onPressed: _isLoading ? null : () async {
+          if (!_isPaymentDone) {
+            final paid = await showDialog<bool>(
+              context: context,
+              builder: (context) => PaymentDialog(),
+            );
+            if (paid == true) {
+              setState(() {
+                _isPaymentDone = true;
+              });
+            } else {
+              return;
+            }
+          }
+          _submitConsultation();
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.patientColor,
           foregroundColor: Colors.white,
@@ -374,7 +396,7 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
         _descriptionController.clear();
         _symptomsController.clear();
         setState(() {
-          _selectedSpecialty = 'طب عام';
+          _selectedSpecialty = 'طبيب عظام';
           _selectedUrgency = 'عادي';
         });
       }
@@ -420,11 +442,76 @@ class _NewConsultationFormState extends State<NewConsultationForm> {
         decoration: AppTheme.getInputDecoration(
           labelText: 'الأعراض التفصيلية',
           prefixIcon: Icons.sick,
-          hintText: 'اذكر جميع الأعراض التي تشعر بها، متى بدأت، شدتها...',
+          hintText: 'اذكر جميع الأعراض التي تشعر بها، متى بدأت، شدتها، مثلاً: ألم مستمر في الركبة، تورم، صعوبة في المشي...',
         ),
         validator: (value) =>
             AuthValidation.validateRequired(value, 'الأعراض التفصيلية'),
       ),
+    );
+  }
+
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.isNotEmpty) {
+      setState(() {
+        _attachedFiles.add({
+          'file': result.files.first,
+          'type': _docTypes.first,
+        });
+      });
+    }
+  }
+
+  Widget _buildAttachmentsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'إرفاق ملفات (اختياري)',
+          style: AppTheme.titleSmall.copyWith(
+            color: AppTheme.patientColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton.icon(
+          onPressed: _pickFile,
+          icon: const Icon(Icons.attach_file),
+          label: const Text('إرفاق ملف'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.patientColor,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 10),
+        ..._attachedFiles.asMap().entries.map((entry) {
+          int idx = entry.key;
+          var file = entry.value['file'];
+          return Row(
+            children: [
+              Expanded(child: Text(file.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 8),
+              DropdownButton<String>(
+                value: entry.value['type'],
+                items: _docTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
+                onChanged: (val) {
+                  setState(() {
+                    _attachedFiles[idx]['type'] = val!;
+                  });
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    _attachedFiles.removeAt(idx);
+                  });
+                },
+              ),
+            ],
+          );
+        }),
+      ],
     );
   }
 }
@@ -441,7 +528,7 @@ class _MyConsultationsListState extends State<MyConsultationsList> {
     {
       'id': '1',
       'title': 'ألم في الصدر',
-      'specialty': 'طب القلب',
+      'specialty': 'طب العظام',
       'urgency': 'عاجل',
       'status': 'قيد المراجعة',
       'date': '2024-01-15',
@@ -450,7 +537,7 @@ class _MyConsultationsListState extends State<MyConsultationsList> {
     {
       'id': '2',
       'title': 'صداع مستمر',
-      'specialty': 'طب الأعصاب',
+      'specialty': 'أخصائي التأهيل الحركي',
       'urgency': 'مهم',
       'status': 'تم الرد',
       'date': '2024-01-10',
@@ -461,7 +548,7 @@ class _MyConsultationsListState extends State<MyConsultationsList> {
     {
       'id': '3',
       'title': 'آلام في المعدة',
-      'specialty': 'طب عام',
+      'specialty': 'فني تصنيع الأطراف الاصطناعية',
       'urgency': 'عادي',
       'status': 'مكتملة',
       'date': '2024-01-05',
@@ -652,6 +739,216 @@ class _MyConsultationsListState extends State<MyConsultationsList> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PaymentDialog extends StatefulWidget {
+  @override
+  State<PaymentDialog> createState() => _PaymentDialogState();
+}
+
+class _PaymentDialogState extends State<PaymentDialog> {
+  String _selectedMethod = 'البطاقة الذهبية';
+  bool _isPaid = false;
+  bool _isPending = false;
+  String? _receiptPath;
+  final _operationNumberController = TextEditingController();
+
+  @override
+  void dispose() {
+    _operationNumberController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('دفع الاستشارة'),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Text('سعر الاستشارة', style: AppTheme.titleLarge),
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text('1500 دج', style: AppTheme.headlineMedium.copyWith(color: AppTheme.successColor, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 24),
+            Text('اختر طريقة الدفع:', style: AppTheme.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            DropdownButton<String>(
+              value: _selectedMethod,
+              items: const [
+                DropdownMenuItem(value: 'البطاقة الذهبية', child: Text('الدفع الإلكتروني (البطاقة الذهبية)')),
+                DropdownMenuItem(value: 'تحويل بنكي', child: Text('تحويل بنكي')),
+                DropdownMenuItem(value: 'تحويل بريدي', child: Text('تحويل بريدي')),
+              ],
+              onChanged: (val) {
+                setState(() {
+                  _selectedMethod = val!;
+                  _isPaid = false;
+                  _isPending = false;
+                  _receiptPath = null;
+                  _operationNumberController.clear();
+                });
+              },
+            ),
+            const SizedBox(height: 24),
+            if (_selectedMethod == 'البطاقة الذهبية') ...[
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: _isPaid
+                      ? null
+                      : () {
+                          setState(() {
+                            _isPaid = true;
+                          });
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('تم الدفع بنجاح!'),
+                              content: const Text('تمت محاكاة عملية الدفع بنجاح. يمكنك الآن إرسال الاستشارة.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('حسناً'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                  icon: const Icon(Icons.credit_card),
+                  label: const Text('دفع إلكتروني'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.successColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+            if (_selectedMethod == 'تحويل بنكي' || _selectedMethod == 'تحويل بريدي') ...[
+              Text('ارفع صورة/وصل التحويل:', style: AppTheme.bodyMedium),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
+                      if (result != null && result.files.isNotEmpty) {
+                        setState(() {
+                          _receiptPath = result.files.first.path;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text('رفع الوصل'),
+                  ),
+                  const SizedBox(width: 12),
+                  if (_receiptPath != null)
+                    const Icon(Icons.check_circle, color: Colors.green),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _operationNumberController,
+                decoration: const InputDecoration(
+                  labelText: 'رقم العملية',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: _isPending
+                      ? null
+                      : () {
+                          setState(() {
+                            _isPending = true;
+                          });
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('تم إرسال الطلب!'),
+                              content: const Text('تم إرسال بيانات التحويل بنجاح. يمكنك الآن إرسال الاستشارة بعد التحقق.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('حسناً'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                  icon: const Icon(Icons.send),
+                  label: const Text('إرسال الطلب'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.patientColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 32),
+            Divider(),
+            const SizedBox(height: 16),
+            Text('حالة الدفع:', style: AppTheme.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Center(
+              child: _isPaid
+                  ? _buildStatusChip('مدفوع')
+                  : _isPending
+                      ? _buildStatusChip('بانتظار التحقق')
+                      : _buildStatusChip('غير مدفوع'),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('إلغاء'),
+        ),
+        ElevatedButton(
+          onPressed: (_isPaid || _isPending)
+              ? () => Navigator.pop(context, true)
+              : null,
+          child: const Text('متابعة'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusChip(String status) {
+    Color color;
+    switch (status) {
+      case 'مدفوع':
+        color = Colors.green;
+        break;
+      case 'بانتظار التحقق':
+        color = Colors.orange;
+        break;
+      default:
+        color = Colors.red;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18),
       ),
     );
   }

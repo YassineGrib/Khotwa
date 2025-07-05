@@ -25,21 +25,14 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen>
 
   List<String> _certifications = [];
   List<String> _workingHours = [];
-  String _selectedSpecialization = 'طب عام';
+  String _selectedSpecialization = 'طب العظام';
 
   final List<String> _specializations = [
-    'طب عام',
-    'طب الأطفال',
-    'طب النساء والولادة',
-    'طب القلب',
-    'طب الأعصاب',
     'طب العظام',
-    'طب الجلدية',
-    'طب العيون',
-    'طب الأنف والأذن والحنجرة',
-    'الطب النفسي',
-    'طب الأسنان',
-    'الجراحة العامة',
+    'فني تصنيع الأطراف الاصطناعية',
+    'أخصائي التأهيل الحركي',
+    'مرشد اجتماعي',
+    'مرشد نفسي',
   ];
 
   @override
@@ -78,13 +71,13 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen>
   void _loadProfileData() {
     // Load existing profile data - will be implemented with actual data storage
     _nameController.text = 'د. أحمد محمد علي';
-    _specializationController.text = 'طب القلب';
+    _specializationController.text = 'طب العظام';
     _licenseController.text = 'LIC-2024-001234';
     _experienceController.text = '10 سنوات';
-    _clinicAddressController.text = 'شارع الملك فهد، الرياض';
+    _clinicAddressController.text = 'شارع الاستقلال، سطيف';
     _aboutController.text =
-        'طبيب قلب متخصص مع خبرة واسعة في علاج أمراض القلب والأوعية الدموية';
-    _certifications = ['شهادة البورد السعودي', 'شهادة الزمالة الأمريكية'];
+        'طبيب عظام متخصص مع خبرة واسعة في جراحة العظام وتصنيع الأطراف الاصطناعية';
+    _certifications = ['شهادة البورد الجزائري', 'شهادة التخصص في جراحة العظام'];
     _workingHours = ['السبت - الخميس: 8:00 ص - 6:00 م'];
   }
 

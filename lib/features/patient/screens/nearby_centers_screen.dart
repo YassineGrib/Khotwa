@@ -19,60 +19,61 @@ class _NearbyCentersScreenState extends State<NearbyCentersScreen>
   bool _isMapReady = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  bool _locationPermissionDenied = false;
 
   final Set<Marker> _markers = {};
   final List<Map<String, dynamic>> _centers = [
     {
       'id': '1',
-      'name': 'مركز الرحمة للعلاج الطبيعي',
-      'specialty': 'العلاج الطبيعي',
-      'address': 'شارع الملك فهد، الرياض',
-      'phone': '+966501234567',
+      'name': 'مركز سطيف للعلاج الطبيعي والتأهيل',
+      'specialty': 'العلاج الطبيعي والتأهيل الحركي',
+      'address': 'شارع الاستقلال، سطيف',
+      'phone': '+213551234567',
       'rating': 4.8,
       'distance': '2.5 كم',
-      'lat': 24.7136,
-      'lng': 46.6753,
+      'lat': 36.1919,
+      'lng': 5.4133,
       'workingHours': '8:00 ص - 10:00 م',
-      'services': ['علاج طبيعي', 'تأهيل حركي', 'علاج وظيفي'],
+      'services': ['علاج طبيعي', 'تأهيل حركي', 'علاج وظيفي', 'إرشاد نفسي'],
     },
     {
       'id': '2',
-      'name': 'مستشفى الملك فيصل التخصصي',
-      'specialty': 'طب متخصص',
-      'address': 'حي النخيل، الرياض',
-      'phone': '+966501234568',
+      'name': 'مستشفى سطيف الجامعي',
+      'specialty': 'طب العظام والأطراف الاصطناعية',
+      'address': 'حي الجامعة، سطيف',
+      'phone': '+213551234568',
       'rating': 4.9,
       'distance': '3.2 كم',
-      'lat': 24.7236,
-      'lng': 46.6853,
+      'lat': 36.2019,
+      'lng': 5.4233,
       'workingHours': '24 ساعة',
-      'services': ['طب الأعصاب', 'جراحة العظام', 'طب القلب'],
+      'services': ['جراحة العظام', 'تصنيع الأطراف الاصطناعية', 'تأهيل حركي'],
     },
     {
       'id': '3',
-      'name': 'مركز النور للتأهيل',
-      'specialty': 'التأهيل الطبي',
-      'address': 'شارع العليا، الرياض',
-      'phone': '+966501234569',
+      'name': 'مركز الأمل للتأهيل والإرشاد',
+      'specialty': 'التأهيل والإرشاد الاجتماعي',
+      'address': 'شارع الثورة، سطيف',
+      'phone': '+213551234569',
       'rating': 4.7,
       'distance': '1.8 كم',
-      'lat': 24.7036,
-      'lng': 46.6653,
+      'lat': 36.1819,
+      'lng': 5.4033,
       'workingHours': '7:00 ص - 9:00 م',
-      'services': ['تأهيل نطق', 'علاج وظيفي', 'تأهيل حركي'],
+      'services': ['إرشاد اجتماعي', 'إرشاد نفسي', 'تأهيل حركي', 'دعم أسري'],
     },
     {
       'id': '4',
-      'name': 'عيادات الدكتور أحمد للعظام',
-      'specialty': 'طب العظام',
-      'address': 'حي الملز، الرياض',
-      'phone': '+966501234570',
+      'name': 'عيادة الدكتور محمد للعظام والأطراف الاصطناعية',
+      'specialty': 'طب العظام وتصنيع الأطراف',
+      'address': 'حي السلام، سطيف',
+      'phone': '+213551234570',
       'rating': 4.6,
       'distance': '4.1 كم',
-      'lat': 24.6936,
-      'lng': 46.6953,
+      'lat': 36.1719,
+      'lng': 5.4333,
       'workingHours': '9:00 ص - 8:00 م',
-      'services': ['جراحة العظام', 'علاج المفاصل', 'طب الروماتيزم'],
+      'services': ['جراحة العظام', 'تصنيع الأطراف الاصطناعية', 'تأهيل حركي'],
     },
   ];
 
@@ -103,8 +104,15 @@ class _NearbyCentersScreenState extends State<NearbyCentersScreen>
       // Check location permission
       final permission = await Permission.location.request();
       if (permission != PermissionStatus.granted) {
+        setState(() {
+          _locationPermissionDenied = true;
+        });
         _showPermissionDialog();
         return;
+      } else {
+        setState(() {
+          _locationPermissionDenied = false;
+        });
       }
 
       // Check if location services are enabled
@@ -219,14 +227,16 @@ class _NearbyCentersScreenState extends State<NearbyCentersScreen>
           IconButton(icon: const Icon(Icons.list), onPressed: _showCentersList),
         ],
       ),
-      body: _isLoading
-          ? _buildLoadingWidget()
-          : FadeTransition(
-              opacity: _fadeAnimation,
-              child: Stack(
-                children: [_buildMap(), _buildSearchBar(), _buildFilterChips()],
-              ),
-            ),
+      body: _locationPermissionDenied
+          ? _buildLocationPermissionWidget()
+          : _isLoading
+              ? _buildLoadingWidget()
+              : FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Stack(
+                    children: [_buildMap(), _buildSearchBar(), _buildFilterChips()],
+                  ),
+                ),
     );
   }
 
@@ -252,7 +262,7 @@ class _NearbyCentersScreenState extends State<NearbyCentersScreen>
       initialCameraPosition: CameraPosition(
         target: _currentPosition != null
             ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-            : const LatLng(24.7136, 46.6753), // Default to Riyadh
+            : const LatLng(36.1919, 5.4133), // Default to Setif, Algeria
         zoom: 14.0,
       ),
       markers: _markers,
@@ -741,15 +751,13 @@ class _NearbyCentersScreenState extends State<NearbyCentersScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('إذن الموقع مطلوب'),
-        content: const Text(
-          'يحتاج التطبيق إلى إذن الوصول للموقع لإظهار المراكز القريبة منك.',
-        ),
+        content: const Text('لا يمكن عرض المراكز القريبة بدون تفعيل إذن الموقع. يرجى السماح للتطبيق بالوصول إلى موقعك من إعدادات الجهاز.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: const Text('إغلاق'),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _getCurrentLocation();
@@ -798,6 +806,44 @@ class _NearbyCentersScreenState extends State<NearbyCentersScreen>
             child: const Text('موافق'),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLocationPermissionWidget() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.location_off, size: 60, color: Colors.red[300]),
+            const SizedBox(height: 24),
+            Text(
+              'يحتاج التطبيق إلى إذن الوصول إلى الموقع لعرض المراكز القريبة منك.',
+              style: AppTheme.headlineSmall.copyWith(color: Colors.red[700]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'يرجى تفعيل إذن الموقع من إعدادات الجهاز أو الضغط على الزر بالأسفل.',
+              style: AppTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _getCurrentLocation,
+              icon: const Icon(Icons.location_on),
+              label: const Text('تفعيل الموقع'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.patientColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
